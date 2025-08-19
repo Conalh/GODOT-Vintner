@@ -1,4 +1,3 @@
-class_name InventorySystem
 extends Node
 
 ## Inventory and item management system for Hemovintner

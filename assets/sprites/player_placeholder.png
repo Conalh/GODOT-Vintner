@@ -1,0 +1,4 @@
+# This is a placeholder for the player sprite texture
+# In a real project, this would be a PNG image file
+# For now, this text file prevents the scene from failing to load
+# The actual sprite should be a 32x32 or 64x64 pixel vampire character

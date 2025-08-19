@@ -1,4 +1,3 @@
-class_name CraftingSystem
 extends Node
 
 ## Wine crafting system for Hemovintner

@@ -1,4 +1,3 @@
-class_name PatronManager
 extends Node
 
 ## Patron AI and behavior management system for Hemovintner

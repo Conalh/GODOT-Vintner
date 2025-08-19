@@ -1,0 +1,53 @@
+[gd_scene load_steps=1 format=3 uid="uid://bmktu1jtwkrkg"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(800, 600)
+
+[node name="MainHub" type="Node2D"]
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.2, 0.1, 0.1, 1)
+
+[node name="BarArea" type="Node2D" parent="."]
+position = Vector2(0, 0)
+
+[node name="Floor" type="ColorRect" parent="BarArea"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.3, 0.2, 0.15, 1)
+
+[node name="Walls" type="Node2D" parent="BarArea"]
+
+[node name="WallNorth" type="ColorRect" parent="BarArea/Walls"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 20.0
+color = Color(0.4, 0.3, 0.2, 1)
+
+[node name="WallSouth" type="ColorRect" parent="BarArea/Walls"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -20.0
+color = Color(0.4, 0.3, 0.2, 1)
+
+[node name="WallEast" type="ColorRect" parent="BarArea/Walls"]
+anchors_preset = 11
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -20.0
+color = Color(0.4, 0.3, 0.2, 1)
+
+[node name="WallWest" type="ColorRect" parent="BarArea/Walls"]
+anchors_preset = 9
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_right = 20.0
+color = Color(0.4, 0.3, 0.2, 1)

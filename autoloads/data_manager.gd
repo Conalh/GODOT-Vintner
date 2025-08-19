@@ -1,4 +1,3 @@
-class_name DataManager
 extends Node
 
 ## Data persistence and loading system for Hemovintner

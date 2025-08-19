@@ -1,4 +1,3 @@
-class_name EconomySystem
 extends Node
 
 ## Economy and currency management system for Hemovintner

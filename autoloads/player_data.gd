@@ -1,4 +1,3 @@
-class_name PlayerData
 extends Node
 
 ## Player progression and data management system for Hemovintner

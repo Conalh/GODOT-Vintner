@@ -1,0 +1,126 @@
+[gd_scene load_steps=4 format=3 uid="uid://b2ype1vbxqgqb"]
+
+[ext_resource type="Script" uid="uid://cloe1w5ghhmvq" path="res://scripts/scenes/main_scene_controller.gd" id="1_controller"]
+[ext_resource type="Script" uid="uid://dpixeycn7036c" path="res://scripts/entities/test_interactable.gd" id="2_test"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(32, 32)
+
+[node name="Main" type="Node2D"]
+script = ExtResource("1_controller")
+
+[node name="Background" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.2, 0.1, 0.1, 1)
+
+[node name="Player" type="CharacterBody2D" parent="."]
+
+[node name="Sprite2D" type="ColorRect" parent="Player"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -16.0
+offset_top = -16.0
+offset_right = 16.0
+offset_bottom = 16.0
+color = Color(0.8, 0.2, 0.2, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource("RectangleShape2D_1")
+
+[node name="InteractionArea" type="Area2D" parent="Player"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/InteractionArea"]
+shape = SubResource("RectangleShape2D_1")
+
+[node name="InteractionPrompt" type="Label" parent="Player"]
+visible = false
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -100.0
+offset_top = -80.0
+offset_right = 100.0
+offset_bottom = -60.0
+text = "Press E to Interact"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Player"]
+
+[node name="InteractionTimer" type="Timer" parent="Player"]
+one_shot = true
+
+[node name="Camera2D" type="Camera2D" parent="Player"]
+position_smoothing_enabled = true
+
+[node name="TestInteractable" type="Area2D" parent="."]
+position = Vector2(200, 0)
+script = ExtResource("2_test")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TestInteractable"]
+shape = SubResource("RectangleShape2D_1")
+
+[node name="Sprite2D" type="ColorRect" parent="TestInteractable"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -24.0
+offset_top = -24.0
+offset_right = 24.0
+offset_bottom = 24.0
+color = Color(0.2, 0.8, 0.2, 1)
+
+[node name="UI" type="CanvasLayer" parent="."]
+
+[node name="InteractionPrompts" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StatusPanel" type="Panel" parent="UI/InteractionPrompts"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = -100.0
+offset_right = 300.0
+offset_bottom = -10.0
+grow_vertical = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/InteractionPrompts/StatusPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PlayerStatus" type="Label" parent="UI/InteractionPrompts/StatusPanel/VBoxContainer"]
+layout_mode = 2
+text = "Player Status"
+horizontal_alignment = 1
+
+[node name="InteractionInfo" type="Label" parent="UI/InteractionPrompts/StatusPanel/VBoxContainer"]
+layout_mode = 2
+text = "No interaction available"
+horizontal_alignment = 1
+
+[node name="Controls" type="Label" parent="UI/InteractionPrompts/StatusPanel/VBoxContainer"]
+layout_mode = 2
+text = "WASD/Arrows: Move | E: Interact"
+horizontal_alignment = 1

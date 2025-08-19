@@ -1,4 +1,3 @@
-class_name GameManager
 extends Node
 
 ## Core game management system for Hemovintner

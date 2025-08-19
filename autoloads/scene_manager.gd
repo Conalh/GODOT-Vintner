@@ -1,4 +1,3 @@
-class_name SceneManager
 extends Node
 
 ## Scene management system for Hemovintner
