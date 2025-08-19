@@ -1,5 +1,5 @@
 class_name GameConstants
-extends RefCounted
+extends Node
 
 # Input constants
 const DEFAULT_MOUSE_SENSITIVITY: float = 1.0
@@ -98,7 +98,7 @@ const RUMOR_REFRESH_INTERVAL: float = 3600.0  # 1 hour
 const MAX_ACTIVE_RUMORS: int = 8
 const RUMOR_UNLOCK_LEVEL: int = 1
 const RUMOR_BOARD_INTERACTION_RANGE: float = 70.0
-const DIFFICULTY_THRESHOLDS: Array[int] = [3, 5, 7, 9]
+const DIFFICULTY_THRESHOLDS: Array = [3, 5, 7, 9]
 const RELIC_CHANCE_BASE: float = 0.1
 const RELIC_CHANCE_PER_DIFFICULTY: float = 0.05
 
