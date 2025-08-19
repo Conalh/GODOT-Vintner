@@ -6,11 +6,32 @@ extends Node2D
 
 func _ready() -> void:
 	"""Initialize the test scene"""
+	print("=== TEST SCENE DEBUG INFO ===")
 	print("Simple test scene loaded successfully!")
 	print("Player node found: ", player != null)
 	if player:
 		print("Player position: ", player.global_position)
 		print("Player velocity: ", player.velocity)
+	
+	# Test basic autoload functionality
+	print("=== AUTOLOAD TEST ===")
+	# Wait a frame to ensure autoloads are ready
+	await get_tree().process_frame
+	
+	if has_node("/root/GameManager"):
+		print("GameManager autoload found")
+		var game_manager = get_node("/root/GameManager")
+		if game_manager.has_method("get_current_game_state"):
+			print("Game state: ", game_manager.get_current_game_state())
+	else:
+		print("GameManager autoload NOT found")
+	
+	if has_node("/root/DataManager"):
+		print("DataManager autoload found")
+	else:
+		print("DataManager autoload NOT found")
+	
+	print("=== END DEBUG INFO ===")
 
 func _physics_process(_delta: float) -> void:
 	"""Handle basic player movement for testing"""

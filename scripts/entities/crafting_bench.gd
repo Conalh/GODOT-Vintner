@@ -339,7 +339,7 @@ func _create_recipe_from_ingredients() -> WineRecipe:
 
 func _generate_recipe_id() -> String:
 	"""Generate a unique recipe ID"""
-	return "recipe_" + str(Time.get_unix_time_from_system())
+	return "recipe_" + str(Time.get_time_dict_from_system().get("unix", 0.0))
 
 func _generate_recipe_name() -> String:
 	"""Generate a recipe name based on ingredients"""

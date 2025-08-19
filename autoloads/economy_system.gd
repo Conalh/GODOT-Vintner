@@ -18,8 +18,8 @@ var net_profit: int = 0
 
 ## Bar income system
 var bar_income_pending: int = 0
-var bar_income_banked: int = 0
-var bar_income_delivered: int = 0
+var _banked_income_total: int = 0
+var _delivered_income_total: int = 0
 var current_day_earnings: int = 0
 
 ## Financial tracking
@@ -109,7 +109,7 @@ func start_hunt_mode() -> void:
 	
 	# Bank any pending bar income
 	if bar_income_pending > 0:
-		bar_income_banked += bar_income_pending
+		_banked_income_total += bar_income_pending
 		bar_income_pending = 0
 	
 	# Save current state
@@ -124,10 +124,10 @@ func end_hunt_mode() -> void:
 	is_hunt_mode = false
 	
 	# Deliver banked income
-	if bar_income_banked > 0:
-		add_currency(bar_income_banked, "hunt_completion_bonus")
-		bar_income_delivered.emit(bar_income_banked)
-		bar_income_banked = 0
+	if _banked_income_total > 0:
+		add_currency(_banked_income_total, "hunt_completion_bonus")
+		bar_income_delivered.emit(_banked_income_total)
+		_banked_income_total = 0
 	
 	# Reset hunt tracking
 	hunt_start_currency = 0
@@ -138,7 +138,7 @@ func end_hunt_mode() -> void:
 
 func complete_day() -> void:
 	"""Complete a game day and process daily expenses"""
-	var current_date: int = Time.get_unix_time_from_system()
+	var current_date: int = int(Time.get_time_dict_from_system().get("unix", 0.0))
 	
 	# Only charge expenses once per day
 	if current_date - last_expense_date >= 86400:  # 24 hours in seconds
@@ -182,8 +182,8 @@ func get_financial_summary() -> Dictionary:
 		"total_expenses": total_expenses,
 		"net_profit": net_profit,
 		"bar_income_pending": bar_income_pending,
-		"bar_income_banked": bar_income_banked,
-		"bar_income_delivered": bar_income_delivered,
+		"bar_income_banked": _banked_income_total,
+		"bar_income_delivered": _delivered_income_total,
 		"current_day_earnings": current_day_earnings,
 		"daily_expenses": daily_expenses,
 		"tax_rate": tax_rate,
@@ -215,8 +215,8 @@ func get_save_data() -> Dictionary:
 		"total_expenses": total_expenses,
 		"net_profit": net_profit,
 		"bar_income_pending": bar_income_pending,
-		"bar_income_banked": bar_income_banked,
-		"bar_income_delivered": bar_income_delivered,
+		"bar_income_banked": _banked_income_total,
+		"bar_income_delivered": _delivered_income_total,
 		"current_day_earnings": current_day_earnings,
 		"daily_expenses": daily_expenses,
 		"tax_rate": tax_rate,
@@ -239,8 +239,8 @@ func load_save_data(save_data: Dictionary) -> void:
 	total_expenses = save_data.get("total_expenses", 0)
 	net_profit = save_data.get("net_profit", 0)
 	bar_income_pending = save_data.get("bar_income_pending", 0)
-	bar_income_banked = save_data.get("bar_income_banked", 0)
-	bar_income_delivered = save_data.get("bar_income_delivered", 0)
+	_banked_income_total = save_data.get("bar_income_banked", 0)
+	_delivered_income_total = save_data.get("bar_income_delivered", 0)
 	current_day_earnings = save_data.get("current_day_earnings", 0)
 	daily_expenses = save_data.get("daily_expenses", GameConstants.DAILY_EXPENSES)
 	tax_rate = save_data.get("tax_rate", GameConstants.TAX_RATE)
@@ -256,7 +256,7 @@ func load_save_data(save_data: Dictionary) -> void:
 func _initialize_economy() -> void:
 	"""Initialize the economy system"""
 	_charge_daily_expenses()
-	last_expense_date = Time.get_unix_time_from_system()
+	last_expense_date = Time.get_time_dict_from_system().get("unix", 0.0)
 
 func _start_daily_expense_timer() -> void:
 	"""Start the timer for daily expenses"""
@@ -276,7 +276,7 @@ func _charge_daily_expenses() -> void:
 func _record_transaction(amount: int, transaction_type: String, description: String) -> void:
 	"""Record a financial transaction"""
 	var transaction: Dictionary = {
-		"timestamp": Time.get_unix_time_from_system(),
+		"timestamp": Time.get_time_dict_from_system().get("unix", 0.0),
 		"amount": amount,
 		"type": transaction_type,
 		"description": description,
@@ -354,8 +354,8 @@ func reset_economy() -> void:
 	total_expenses = 0
 	net_profit = 0
 	bar_income_pending = 0
-	bar_income_banked = 0
-	bar_income_delivered = 0
+	_banked_income_total = 0
+	_delivered_income_total = 0
 	current_day_earnings = 0
 	transaction_history.clear()
 	

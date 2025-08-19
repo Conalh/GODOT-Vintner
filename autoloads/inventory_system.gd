@@ -165,7 +165,7 @@ func add_wine(wine_id: String, wine_data: Dictionary) -> bool:
 	var wine_item: Dictionary = {
 		"item_id": wine_id,
 		"wine_data": wine_data,
-		"craft_date": Time.get_unix_time_from_system(),
+		"craft_date": Time.get_time_dict_from_system().get("unix", 0.0),
 		"quality": wine_data.get("quality", 0.5),
 		"aging_time": 0.0
 	}
@@ -184,7 +184,7 @@ func add_blood_source(blood_id: String, blood_data: Dictionary) -> bool:
 	var blood_item: Dictionary = {
 		"item_id": blood_id,
 		"blood_data": blood_data,
-		"harvest_date": Time.get_unix_time_from_system(),
+		"harvest_date": Time.get_time_dict_from_system().get("unix", 0.0),
 		"freshness": 1.0,
 		"purity": blood_data.get("purity", 0.8)
 	}
@@ -203,7 +203,7 @@ func add_relic(relic_id: String, relic_data: Dictionary) -> bool:
 	var relic_item: Dictionary = {
 		"item_id": relic_id,
 		"relic_data": relic_data,
-		"discovery_date": Time.get_unix_time_from_system(),
+		"discovery_date": Time.get_time_dict_from_system().get("unix", 0.0),
 		"power_level": relic_data.get("power_level", 1),
 		"charges": relic_data.get("charges", 1)
 	}

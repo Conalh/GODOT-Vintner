@@ -91,7 +91,8 @@ func load_game(save_slot: int = 0) -> bool:
 			return false
 	
 	# Load game data
-	if not DataManager.load_game(save_slot):
+	var data_manager = get_node_or_null("/root/DataManager")
+	if not data_manager or not data_manager.load_game(save_slot):
 		push_error("Failed to load game from slot %d" % save_slot)
 		return false
 	
@@ -111,7 +112,8 @@ func save_game(save_slot: int = 0) -> bool:
 		push_error("Cannot save game before initialization")
 		return false
 	
-	if not DataManager.save_game(save_slot):
+	var data_manager = get_node_or_null("/root/DataManager")
+	if not data_manager or not data_manager.save_game(save_slot):
 		push_error("Failed to save game to slot %d" % save_slot)
 		return false
 	
@@ -218,7 +220,8 @@ func start_hunt_mode(zone: GameEnums.GameZone) -> bool:
 		return false
 	
 	current_hunt_zone = zone
-	hunt_start_time = Time.get_time_dict_from_system()
+	var start_time_dict = Time.get_time_dict_from_system()
+	hunt_start_time = start_time_dict.get("unix", 0.0)
 	
 	# Pause day cycle during hunt
 	pause_day_cycle()
@@ -236,7 +239,9 @@ func end_hunt_mode(success: bool = true) -> bool:
 		return false
 	
 	# Calculate hunt duration
-	hunt_duration = Time.get_time_dict_from_system() - hunt_start_time
+	var current_time_dict = Time.get_time_dict_from_system()
+	var current_time_float = current_time_dict.get("unix", 0.0)
+	hunt_duration = current_time_float - hunt_start_time
 	
 	# Resume day cycle
 	resume_day_cycle()
@@ -274,9 +279,9 @@ func get_game_summary() -> Dictionary:
 		"current_hunt_zone": current_hunt_zone,
 		"hunt_duration": hunt_duration,
 		"systems_status": get_system_status(),
-		"player_level": PlayerData.player_level if PlayerData else 0,
-		"bar_reputation": PlayerData.bar_reputation if PlayerData else 0.0,
-		"currency": EconomySystem.current_currency if EconomySystem else 0
+		"player_level": _get_player_level(),
+		"bar_reputation": _get_player_reputation(),
+		"currency": _get_economy_currency()
 	}
 
 ## Save/load methods
@@ -354,32 +359,26 @@ func _initialize_system(system_name: String) -> bool:
 func _reset_all_systems() -> void:
 	"""Reset all systems to initial state"""
 	# Reset player data
-	if PlayerData:
-		PlayerData.reset_progression()
+	_call_autoload_method_safe("PlayerData", "reset_progression")
 	
 	# Reset economy
-	if EconomySystem:
-		EconomySystem.reset_economy()
+	_call_autoload_method_safe("EconomySystem", "reset_economy")
 	
 	# Reset inventory
-	if InventorySystem:
-		# Clear all items
-		pass
+	# InventorySystem reset would go here
+	# _call_autoload_method_safe("InventorySystem", "reset_inventory")
 	
 	# Reset crafting
-	if CraftingSystem:
-		# Reset crafting state
-		pass
+	# CraftingSystem reset would go here
+	# _call_autoload_method_safe("CraftingSystem", "reset_crafting")
 	
 	# Reset patron manager
-	if PatronManager:
-		# Clear active patrons
-		pass
+	# PatronManager reset would go here
+	# _call_autoload_method_safe("PatronManager", "reset_patrons")
 	
 	# Reset scene manager
-	if SceneManager:
-		# Reset scene history
-		pass
+	# SceneManager reset would go here
+	# _call_autoload_method_safe("SceneManager", "reset_scenes")
 
 func _start_day_cycle() -> void:
 	"""Start the day cycle"""
@@ -408,24 +407,21 @@ func _handle_menu_state() -> void:
 	pause_day_cycle()
 	
 	# Pause all game systems
-	if PatronManager:
-		PatronManager.pause_spawning()
+	_call_autoload_method_safe("PatronManager", "pause_spawning")
 
 func _handle_hub_state() -> void:
 	"""Handle entering hub state"""
 	resume_day_cycle()
 	
 	# Resume all game systems
-	if PatronManager:
-		PatronManager.resume_spawning()
+	_call_autoload_method_safe("PatronManager", "resume_spawning")
 
 func _handle_hunt_state() -> void:
 	"""Handle entering hunt state"""
 	pause_day_cycle()
 	
 	# Pause patron spawning
-	if PatronManager:
-		PatronManager.pause_spawning()
+	_call_autoload_method_safe("PatronManager", "pause_spawning")
 
 func _handle_paused_state() -> void:
 	"""Handle entering paused state"""
@@ -440,7 +436,8 @@ func _handle_transitioning_state() -> void:
 func _determine_game_state_from_data() -> GameEnums.GameState:
 	"""Determine appropriate game state from loaded data"""
 	# Check if player is in hunt mode
-	if PlayerData and PlayerData.is_in_hunt_mode:
+	var player_data = _get_autoload_safe("PlayerData")
+	if player_data and player_data.has_method("is_in_hunt_mode") and player_data.is_in_hunt_mode:
 		return GameEnums.GameState.HUNT
 	
 	# Default to hub state
@@ -461,29 +458,44 @@ func _cleanup_game() -> void:
 func _connect_system_signals() -> void:
 	"""Connect to signals from other systems"""
 	# Connect to scene manager signals
-	if SceneManager:
-		SceneManager.scene_transition_started.connect(_on_scene_transition_started)
-		SceneManager.scene_transition_completed.connect(_on_scene_transition_completed)
+	var scene_manager = _get_autoload_safe("SceneManager")
+	if scene_manager:
+		if scene_manager.has_signal("scene_transition_started"):
+			scene_manager.scene_transition_started.connect(_on_scene_transition_started)
+		if scene_manager.has_signal("scene_transition_completed"):
+			scene_manager.scene_transition_completed.connect(_on_scene_transition_completed)
 	
 	# Connect to player data signals
-	if PlayerData:
-		PlayerData.level_up.connect(_on_player_level_up)
-		PlayerData.progression_updated.connect(_on_progression_updated)
+	var player_data = _get_autoload_safe("PlayerData")
+	if player_data:
+		if player_data.has_signal("level_up"):
+			player_data.level_up.connect(_on_player_level_up)
+		if player_data.has_signal("progression_updated"):
+			player_data.progression_updated.connect(_on_progression_updated)
 	
 	# Connect to economy signals
-	if EconomySystem:
-		EconomySystem.currency_changed.connect(_on_currency_changed)
-		EconomySystem.bar_income_banked.connect(_on_bar_income_banked)
+	var economy_system = _get_autoload_safe("EconomySystem")
+	if economy_system:
+		if economy_system.has_signal("currency_changed"):
+			economy_system.currency_changed.connect(_on_currency_changed)
+		if economy_system.has_signal("bar_income_banked"):
+			economy_system.bar_income_banked.connect(_on_bar_income_banked)
 	
 	# Connect to crafting signals
-	if CraftingSystem:
-		CraftingSystem.crafting_completed.connect(_on_crafting_completed)
-		CraftingSystem.recipe_unlocked.connect(_on_recipe_unlocked)
+	var crafting_system = _get_autoload_safe("CraftingSystem")
+	if crafting_system:
+		if crafting_system.has_signal("crafting_completed"):
+			crafting_system.crafting_completed.connect(_on_crafting_completed)
+		if crafting_system.has_signal("recipe_unlocked"):
+			crafting_system.recipe_unlocked.connect(_on_recipe_unlocked)
 	
 	# Connect to patron manager signals
-	if PatronManager:
-		PatronManager.patron_satisfied.connect(_on_patron_satisfied)
-		PatronManager.patron_dissatisfied.connect(_on_patron_dissatisfied)
+	var patron_manager = _get_autoload_safe("PatronManager")
+	if patron_manager:
+		if patron_manager.has_signal("patron_satisfied"):
+			patron_manager.patron_satisfied.connect(_on_patron_satisfied)
+		if patron_manager.has_signal("patron_dissatisfied"):
+			patron_manager.patron_dissatisfied.connect(_on_patron_dissatisfied)
 
 func _disconnect_system_signals() -> void:
 	"""Disconnect from system signals"""
@@ -510,12 +522,10 @@ func _on_day_cycle_timeout() -> void:
 	day_progress = 0.0
 	
 	# Complete day in player data
-	if PlayerData:
-		PlayerData.complete_day()
+	_call_autoload_method_safe("PlayerData", "complete_day")
 	
 	# Complete day in economy
-	if EconomySystem:
-		EconomySystem.complete_day()
+	_call_autoload_method_safe("EconomySystem", "complete_day")
 	
 	day_cycle_completed.emit()
 	
@@ -530,7 +540,11 @@ func _on_scene_transition_started(from_scene: String, to_scene: String) -> void:
 func _on_scene_transition_completed(scene_name: String) -> void:
 	"""Handle scene transition completion"""
 	# Determine appropriate game state based on scene
-	var scene_type: GameEnums.SceneType = SceneManager.get_current_scene_type()
+	var scene_manager = _get_autoload_safe("SceneManager")
+	var scene_type: GameEnums.SceneType = GameEnums.SceneType.HUB  # Default
+	
+	if scene_manager and scene_manager.has_method("get_current_scene_type"):
+		scene_type = scene_manager.get_current_scene_type()
 	
 	match scene_type:
 		GameEnums.SceneType.HUB:
@@ -551,13 +565,13 @@ func _on_player_level_up(new_level: int, total_xp: int) -> void:
 func _on_progression_updated() -> void:
 	"""Handle player progression updates"""
 	# Auto-save on progression updates
-	DataManager.auto_save()
+	_call_autoload_method_safe("DataManager", "auto_save")
 
 func _on_currency_changed(old_amount: int, new_amount: int) -> void:
 	"""Handle currency changes"""
 	# Auto-save on significant currency changes
 	if abs(new_amount - old_amount) > 100:
-		DataManager.auto_save()
+		_call_autoload_method_safe("DataManager", "auto_save")
 
 func _on_bar_income_banked(amount: int) -> void:
 	"""Handle bar income being banked"""
@@ -567,12 +581,12 @@ func _on_bar_income_banked(amount: int) -> void:
 func _on_crafting_completed(recipe_id: String, result: Dictionary) -> void:
 	"""Handle crafting completion"""
 	# Auto-save on crafting completion
-	DataManager.auto_save()
+	_call_autoload_method_safe("DataManager", "auto_save")
 
 func _on_recipe_unlocked(recipe_id: String) -> void:
 	"""Handle recipe unlock"""
 	# Auto-save on recipe unlock
-	DataManager.auto_save()
+	_call_autoload_method_safe("DataManager", "auto_save")
 
 func _on_patron_satisfied(patron_id: String, satisfaction: float) -> void:
 	"""Handle patron satisfaction"""
@@ -593,11 +607,8 @@ func enable_debug_mode() -> void:
 	god_mode = true
 	
 	# Enable debug in other systems
-	if PlayerData:
-		PlayerData.enable_debug_mode()
-	
-	if EconomySystem:
-		EconomySystem.enable_debug_mode()
+	_call_autoload_method_safe("PlayerData", "enable_debug_mode")
+	_call_autoload_method_safe("EconomySystem", "enable_debug_mode")
 
 func disable_debug_mode() -> void:
 	"""Disable debug features"""
@@ -606,13 +617,44 @@ func disable_debug_mode() -> void:
 	god_mode = false
 	
 	# Disable debug in other systems
-	if PlayerData:
-		PlayerData.disable_debug_mode()
-	
-	if EconomySystem:
-		EconomySystem.disable_debug_mode()
+	_call_autoload_method_safe("PlayerData", "disable_debug_mode")
+	_call_autoload_method_safe("EconomySystem", "disable_debug_mode")
 
 func _check_level_based_unlocks(level: int) -> void:
 	"""Check for new unlocks based on player level"""
 	# This would check various unlock conditions
 	pass
+
+## Helper methods for safe autoload access
+
+func _get_player_level() -> int:
+	"""Safely get player level from autoload"""
+	var player_data = get_node_or_null("/root/PlayerData")
+	if player_data and player_data.has_method("get_player_level"):
+		return player_data.get_player_level()
+	return 1
+
+func _get_player_reputation() -> float:
+	"""Safely get player reputation from autoload"""
+	var player_data = get_node_or_null("/root/PlayerData")
+	if player_data and player_data.has_method("get_bar_reputation"):
+		return player_data.get_bar_reputation()
+	return 0.0
+
+func _get_economy_currency() -> int:
+	"""Safely get economy currency from autoload"""
+	var economy_system = get_node_or_null("/root/EconomySystem")
+	if economy_system and economy_system.has_method("get_current_currency"):
+		return economy_system.get_current_currency()
+	return 0
+
+func _get_autoload_safe(autoload_name: String) -> Node:
+	"""Safely get an autoload node by name"""
+	return get_node_or_null("/root/" + autoload_name)
+
+func _call_autoload_method_safe(autoload_name: String, method_name: String, default_return = null) -> Variant:
+	"""Safely call a method on an autoload"""
+	var autoload = _get_autoload_safe(autoload_name)
+	if autoload and autoload.has_method(method_name):
+		return autoload.call(method_name)
+	return default_return

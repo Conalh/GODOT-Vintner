@@ -1,1 +1,11 @@
 res://autoloads/game_manager.gd
+res://scenes/test_simple.tscn
+res://scenes/main.tscn
+res://autoloads/player_data.gd
+res://scripts/test_simple_controller.gd
+res://autoloads/crafting_system.gd
+res://autoloads/data_manager.gd
+res://autoloads/economy_system.gd
+res://autoloads/inventory_system.gd
+res://autoloads/patron_manager.gd
+res://constants/game_constants.gd

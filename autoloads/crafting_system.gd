@@ -50,7 +50,7 @@ func start_crafting(recipe_id: String, ingredients: Array[Dictionary]) -> bool:
 	current_craft = {
 		"recipe_id": recipe_id,
 		"ingredients": ingredients,
-		"start_time": Time.get_unix_time_from_system(),
+		"start_time": Time.get_time_dict_from_system().get("unix", 0.0),
 		"crafting_station": _get_crafting_station(recipe_id)
 	}
 	
@@ -363,7 +363,7 @@ func _complete_crafting(recipe_id: String, ingredients: Array[Dictionary]) -> vo
 		"description": recipe.get("description", ""),
 		"quality": wine_quality,
 		"base_price": recipe.get("base_price", 100),
-		"crafting_date": Time.get_unix_time_from_system(),
+		"crafting_date": Time.get_time_dict_from_system().get("unix", 0.0),
 		"ingredients_used": ingredients,
 		"crafting_station": current_craft.get("crafting_station", GameEnums.CraftingStation.BLOOD_EXTRACTOR)
 	}

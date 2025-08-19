@@ -112,12 +112,12 @@ func get_save_metadata(save_slot: int) -> Dictionary:
 	file.close()
 	
 	var json: JSON = JSON.new()
-	var parse_result: JSONParseResult = json.parse(json_string)
+	var parse_result = json.parse_string(json_string)
 	
-	if parse_result.error == OK:
-		metadata = parse_result.data
+	if parse_result != null:
+		metadata = parse_result
 	else:
-		push_error("Failed to parse save metadata: %s" % parse_result.error_string)
+		push_error("Failed to parse save metadata")
 	
 	return metadata
 
@@ -166,12 +166,12 @@ func load_user_preferences() -> bool:
 	file.close()
 	
 	var json: JSON = JSON.new()
-	var parse_result: JSONParseResult = json.parse(json_string)
+	var parse_result = json.parse_string(json_string)
 	
-	if parse_result.error == OK:
-		user_preferences = parse_result.data
+	if parse_result != null:
+		user_preferences = parse_result
 	else:
-		push_error("Failed to parse preferences file: %s" % parse_result.error_string)
+		push_error("Failed to parse preferences file")
 		_create_default_preferences()
 	
 	return true
@@ -190,7 +190,7 @@ func _collect_save_data() -> Dictionary:
 	"""Collect all necessary data from other systems for saving"""
 	var save_data: Dictionary = {
 		"version": GameConstants.SAVE_VERSION,
-		"timestamp": Time.get_unix_time_from_system(),
+		"timestamp": Time.get_time_dict_from_system().get("unix", 0.0),
 		"player_data": {},
 		"inventory_data": {},
 		"economy_data": {},
@@ -302,12 +302,12 @@ func _read_save_file(file_path: String) -> Dictionary:
 	file.close()
 	
 	var json: JSON = JSON.new()
-	var parse_result: JSONParseResult = json.parse(json_string)
+	var parse_result = json.parse_string(json_string)
 	
-	if parse_result.error == OK:
-		return parse_result.data
+	if parse_result != null:
+		return parse_result
 	else:
-		push_error("Failed to parse save file: %s" % parse_result.error_string)
+		push_error("Failed to parse save file")
 		return {}
 
 func _save_metadata(save_slot: int, save_data: Dictionary) -> void:

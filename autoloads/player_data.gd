@@ -106,7 +106,7 @@ func unlock_zone(zone: GameEnums.GameZone) -> bool:
 		return false
 	
 	unlocked_zones.append(zone)
-	unlock_gained.emit(zone, "Zone: " + zone)
+	unlock_gained.emit(str(zone), "Zone: " + str(zone))
 	
 	if zone > highest_zone_unlocked:
 		highest_zone_unlocked = zone
@@ -173,8 +173,11 @@ func start_hunt() -> void:
 		return
 	
 	is_in_hunt_mode = true
-	hunt_start_time = Time.get_time_dict_from_system()
-	DataManager.save_game()  # Save before hunt
+	var start_time_dict = Time.get_time_dict_from_system()
+	hunt_start_time = start_time_dict.get("unix", 0.0)
+	var data_manager = get_node_or_null("/root/DataManager")
+	if data_manager:
+		data_manager.save_game()  # Save before hunt
 
 func end_hunt(success: bool = true) -> void:
 	"""Mark the end of a hunt session"""
@@ -183,13 +186,17 @@ func end_hunt(success: bool = true) -> void:
 		return
 	
 	is_in_hunt_mode = false
-	var hunt_duration: float = Time.get_time_dict_from_system() - hunt_start_time
+	var current_time_dict = Time.get_time_dict_from_system()
+	var current_time_float = current_time_dict.get("unix", 0.0)
+	var hunt_duration: float = current_time_float - hunt_start_time
 	
 	if success:
 		successful_hunts += 1
 		add_experience(GameConstants.XP_PER_SUCCESSFUL_HUNT)
 	
-	DataManager.save_game()  # Save after hunt
+	var data_manager = get_node_or_null("/root/DataManager")
+	if data_manager:
+		data_manager.save_game()  # Save after hunt
 
 func complete_day() -> void:
 	"""Mark the completion of a game day"""
@@ -318,8 +325,9 @@ func _load_default_unlocks() -> void:
 
 func _connect_signals() -> void:
 	"""Connect to other system signals"""
-	if DataManager:
-		DataManager.data_saved.connect(_on_data_saved)
+	var data_manager = get_node_or_null("/root/DataManager")
+	if data_manager:
+		data_manager.data_saved.connect(_on_data_saved)
 
 func _validate_save_data(save_data: Dictionary) -> bool:
 	"""Validate save data structure"""
@@ -336,6 +344,16 @@ func _validate_save_data(save_data: Dictionary) -> bool:
 func _on_data_saved(save_slot: int) -> void:
 	"""Handle data save events"""
 	progression_updated.emit()
+
+## Getter methods for external access
+
+func get_player_level() -> int:
+	"""Get the current player level"""
+	return player_level
+
+func get_bar_reputation() -> float:
+	"""Get the current bar reputation"""
+	return bar_reputation
 
 ## Debug and development methods
 

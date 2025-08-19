@@ -51,7 +51,7 @@ func spawn_patron() -> Dictionary:
 		"id": patron_id,
 		"personality": personality,
 		"needs": needs,
-		"spawn_time": Time.get_unix_time_from_system(),
+		"spawn_time": Time.get_time_dict_from_system().get("unix", 0.0),
 		"patience_time": GameConstants.PATRON_PATIENCE_TIME,
 		"satisfaction": 1.0,
 		"current_need": needs[0] if needs.size() > 0 else GameEnums.PatronNeed.BLOOD_WINE,
@@ -136,7 +136,7 @@ func fulfill_patron_order(patron_id: String, wine_quality: float) -> bool:
 
 func update_patron_behavior(delta: float) -> void:
 	"""Update patron behavior and satisfaction over time"""
-	var current_time: float = Time.get_unix_time_from_system()
+	var current_time: float = Time.get_time_dict_from_system().get("unix", 0.0)
 	
 	for patron_id in active_patrons.keys():
 		var patron_data: Dictionary = active_patrons[patron_id]
@@ -312,7 +312,7 @@ func _setup_spawn_timer() -> void:
 
 func _generate_patron_id() -> String:
 	"""Generate a unique patron ID"""
-	var timestamp: int = Time.get_unix_time_from_system()
+	var timestamp: int = int(Time.get_time_dict_from_system().get("unix", 0.0))
 	var random_suffix: String = str(randi() % 10000).pad_zeros(4)
 	return "patron_%d_%s" % [timestamp, random_suffix]
 
@@ -556,7 +556,7 @@ func _generate_special_requests(personality: GameEnums.PatronPersonality) -> Arr
 func _calculate_order_urgency(patron_data: Dictionary) -> float:
 	"""Calculate how urgent a patron's order is"""
 	var personality: GameEnums.PatronPersonality = patron_data.personality
-	var time_in_scene: float = Time.get_unix_time_from_system() - patron_data.spawn_time
+	var time_in_scene: float = Time.get_time_dict_from_system().get("unix", 0.0) - patron_data.spawn_time
 	var patience_remaining: float = patron_data.patience_time - time_in_scene
 	
 	# More urgent if patience is running low
@@ -574,7 +574,7 @@ func _calculate_service_speed(patron_data: Dictionary) -> float:
 	"""Calculate service speed for satisfaction bonus"""
 	var order_time: float = 0.0
 	if patron_data.order_taken:
-		order_time = Time.get_unix_time_from_system() - patron_data.spawn_time
+		order_time = Time.get_time_dict_from_system().get("unix", 0.0) - patron_data.spawn_time
 	
 	# Faster service = higher bonus
 	var speed_score: float = 1.0 - (order_time / patron_data.patience_time)
