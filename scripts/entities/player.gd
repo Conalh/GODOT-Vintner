@@ -85,9 +85,9 @@ func _setup_animation_player() -> void:
 	if animation_player:
 		# Ensure we have basic animations
 		if not animation_player.has_animation("idle"):
-			animation_player.add_animation("idle", Animation.new())
+			push_warning("Missing 'idle' animation in AnimationPlayer!")
 		if not animation_player.has_animation("walk"):
-			animation_player.add_animation("walk", Animation.new())
+			push_warning("Missing 'walk' animation in AnimationPlayer!")
 
 func _setup_input_handling() -> void:
 	"""Set up input action mappings if they don't exist"""
@@ -166,7 +166,14 @@ func _can_interact() -> bool:
 	if is_interacting:
 		return false
 	
-	var current_time: float = Time.get_time_dict_from_system()["unix"]
+	var time_dict = Time.get_time_dict_from_system()
+	var current_time: float = 0.0
+	if "timestamp" in time_dict:
+		current_time = time_dict["timestamp"]
+	elif "unix" in time_dict:
+		current_time = time_dict["unix"]
+	else:
+		push_error("Time dictionary missing 'timestamp' and 'unix' keys! Contents: %s" % str(time_dict))
 	if current_time - last_interaction_time < interaction_cooldown:
 		return false
 	
@@ -182,7 +189,13 @@ func _start_interaction() -> void:
 		return
 	
 	is_interacting = true
-	last_interaction_time = Time.get_time_dict_from_system()["unix"]
+	var time_dict = Time.get_time_dict_from_system()
+	if "unix" in time_dict:
+		last_interaction_time = time_dict["unix"]
+	elif "timestamp" in time_dict:
+		last_interaction_time = time_dict["timestamp"]
+	else:
+		push_error("Time dictionary missing 'unix' and 'timestamp' keys! Contents: %s" % str(time_dict))
 	
 	# Start interaction timer
 	if interaction_timer:

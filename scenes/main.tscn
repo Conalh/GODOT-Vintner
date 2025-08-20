@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://b2ype1vbxqgqb"]
+[gd_scene load_steps=5 format=3 uid="uid://b2ype1vbxqgqb"]
 
 [ext_resource type="Script" uid="uid://cloe1w5ghhmvq" path="res://scripts/scenes/main_scene_controller.gd" id="1_controller"]
+[ext_resource type="Script" uid="uid://c54dc1ayeyifo" path="res://scripts/entities/player.gd" id="2_sugp2"]
 [ext_resource type="Script" uid="uid://dpixeycn7036c" path="res://scripts/entities/test_interactable.gd" id="2_test"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
@@ -16,6 +17,7 @@ anchor_bottom = 1.0
 color = Color(0.2, 0.1, 0.1, 1)
 
 [node name="Player" type="CharacterBody2D" parent="."]
+script = ExtResource("2_sugp2")
 
 [node name="Sprite2D" type="ColorRect" parent="Player"]
 anchors_preset = 8

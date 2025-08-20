@@ -10,8 +10,8 @@ signal crafting_failed(recipe_id: String, reason: String)
 signal quality_improved(recipe_id: String, old_quality: float, new_quality: float)
 
 ## Recipe management
-var available_recipes: Array[String] = []
-var unlocked_recipes: Array[String] = []
+var available_recipes: Array = []
+var unlocked_recipes: Array = []
 var recipe_templates: Dictionary = {}
 
 ## Crafting state

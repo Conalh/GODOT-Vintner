@@ -3,7 +3,7 @@ extends Node2D
 
 ## Main scene controller that manages the player and UI integration
 
-@onready var player: CharacterBody2D = $Player
+@onready var player: Player = $Player
 @onready var status_panel: Panel = $UI/InteractionPrompts/StatusPanel
 @onready var interaction_info: Label = $UI/InteractionPrompts/StatusPanel/VBoxContainer/InteractionInfo
 

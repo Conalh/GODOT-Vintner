@@ -84,6 +84,7 @@ const PATRON_SATISFACTION_THRESHOLD: float = 0.7
 const PATRON_MAX_SATISFACTION: float = 1.0
 const PATRON_MIN_SATISFACTION: float = 0.0
 const PATRON_SATISFACTION_DECAY_RATE: float = 0.1
+const PATRON_SATISFACTION_DECAY: float = 0.1
 const PATRON_WAIT_TOLERANCE: float = 30.0
 const PATRON_TIP_BASE: int = 10
 const PATRON_TIP_MULTIPLIER: float = 1.5
@@ -188,7 +189,6 @@ const URGENCY_MULTIPLIER_MEDIUM: float = 1.3
 const REPUTATION_LOSS_PER_PATRON: float = 0.05
 const MAX_PATRONS_PER_SCENE: int = 8
 const PATRON_PATIENCE_TIME: float = 120.0  # 2 minutes before leaving
-const PATRON_SATISFACTION_DECAY: float = 0.1
 const XP_PER_SATISFIED_PATRON: int = 10
 
 # Scene manager constants
@@ -272,7 +272,6 @@ const RELIC_PRESTIGE_REQUIREMENT: int = 0
 const PATRON_MOOD_SWINGS: float = 0.0
 const PATRON_PATIENCE_LEVEL: float = 0.5
 const PATRON_BASE_TIP_AMOUNT: int = 5
-const PATRON_TIP_MULTIPLIER: float = 1.0
 const PATRON_MAX_TIP_AMOUNT: int = 50
 const PATRON_VISIT_FREQUENCY: float = 1.0
 const PATRON_STAY_DURATION: float = 1.0

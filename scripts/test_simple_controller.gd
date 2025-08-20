@@ -2,7 +2,7 @@ extends Node2D
 
 ## Simple test controller for basic functionality testing
 
-@onready var player: CharacterBody2D = $Player
+@onready var player: Player = $Player
 
 func _ready() -> void:
 	"""Initialize the test scene"""

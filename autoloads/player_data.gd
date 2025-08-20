@@ -321,7 +321,7 @@ func _load_default_unlocks() -> void:
 	"""Load default unlocks for new players"""
 	unlocked_recipes.append("basic_blood_wine")
 	unlocked_crafting_stations.append("blood_extractor")
-	unlocked_zones.append(GameEnums.GameZone.DESERT_DIVE)
+	unlocked_zones.append(str(GameEnums.GameZone.DESERT_DIVE)) # Ensure String type for TypedArray
 
 func _connect_signals() -> void:
 	"""Connect to other system signals"""
