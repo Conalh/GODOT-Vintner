@@ -83,8 +83,8 @@ const PATRON_FRICTION: float = 0.8
 const PATRON_SATISFACTION_THRESHOLD: float = 0.7
 const PATRON_MAX_SATISFACTION: float = 1.0
 const PATRON_MIN_SATISFACTION: float = 0.0
+# Rate at which patron satisfaction decreases per second
 const PATRON_SATISFACTION_DECAY_RATE: float = 0.1
-const PATRON_SATISFACTION_DECAY: float = 0.1
 const PATRON_WAIT_TOLERANCE: float = 30.0
 const PATRON_TIP_BASE: int = 10
 const PATRON_TIP_MULTIPLIER: float = 1.5
@@ -281,6 +281,11 @@ const PATRON_LOYALTY_LEVEL: int = 0
 const PATRON_QUALITY_BONUS_EXCELLENT: float = 2.0
 const PATRON_QUALITY_BONUS_GOOD: float = 1.0
 const PATRON_QUALITY_BONUS_ACCEPTABLE: float = 1.0
-
 # Additional patron constants for enhanced functionality
 # Note: PATRON_SATISFACTION_DECAY and PATRON_TIP_CHANCE are already defined above
+# PATRON_SATISFACTION_DECAY is used as a base value for satisfaction loss per event, while PATRON_SATISFACTION_DECAY_RATE determines the rate of continuous satisfaction decrease over time.
+# Note: If you add a new constant named PATRON_SATISFACTION_DECAY, clarify its purpose.
+# For example:
+# const PATRON_SATISFACTION_DECAY: float = 0.1  # Amount satisfaction decreases per event (not per second)
+# If both are needed, document the difference clearly above each definition.
+# Note: PATRON_TIP_CHANCE is already defined above
